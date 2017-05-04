@@ -1,7 +1,6 @@
 var Basic = function(front, back) {
     this.front = front;
     this.back = back;
-
 }
 
 Basic.prototype.printCard = function() {
@@ -10,9 +9,7 @@ Basic.prototype.printCard = function() {
 
 Basic.prototype.printFront = function() {
     console.log(this.front);
-
 }
-
 
 Basic.prototype.printAnswer = function() {
     console.log('Sorry, the correct answer is ' + this.back + '.');
