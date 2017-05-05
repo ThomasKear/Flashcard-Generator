@@ -1,19 +1,13 @@
-// this var calls out to the basic constructor 
 var BasicCard = require("./Basic");
-// this var is for the cloze constructor
 var ClozeCard = require("./ClozeCard");
-// this is for the npm inquirer
 var inquirer = require("inquirer");
-// this is to read/write to other "pages"
 var fs = require("fs");
-// to keep track of your score
 var correct = 0;
 var wrong = 0;
-// establishes a global array
 var questionArray = [];
  
-var flashcards = function() {
-    // interacts with the user prompting which action they wanted
+var start = function() {
+    /* First we find out what the user wants to do*/
     inquirer.prompt([{
 
             type: "list",
@@ -28,9 +22,9 @@ var flashcards = function() {
                 "I'm done, thanks."
             ]
         }
-
+        /* Then we assign the appropriate pages and functions to correlate with the user's commands*/
     ]).then(function(choice) {
-    //This will call the appropriate functions and prompts 
+    
         if (choice.gameChoice === "Play with the basic flashcards.") {
             quiz("log.txt", 0);
         } else if (choice.gameChoice === "Create basic flashcards.") {
@@ -49,39 +43,38 @@ var flashcards = function() {
             console.log("Have a great rest of your day");
         }
     });
-}
+};
 
-// this function reads from either the Basic or Cloze .txt / .json
+/* We read the card from the appropiate file*/
 var readCards = function(fileLog) {
-    // this global variable will capture the json data
+    
     questionArray = [];
-    // file system readFile (the particular page the script is coming from)
+    
     fs.readFile(fileLog, "utf8", function(err, data) {
-        // parse the data
         var jsonData = JSON.parse(data);
-        // loop thru and fills the questionArray
         for (var i = 0; i < jsonData.length; i++) {
             questionArray.push(jsonData[i]);
         }
     });
 };
 
-// creating the cards we need with the correlating prompts and file
-var createCards = function(promptThis, fileLog) {
-    // calls inquirer and gives the promise 
-    inquirer.prompt(promptThis).then(function(answers) {
+/* Here the user can create their own flashcards with both a question and answer in either format*/
+var createCards = function(thisPrompt, fileLog) {
+     
+    inquirer.prompt(thisPrompt).then(function(answers) {
 
         questionArray.push(answers);
         if (answers.makeMore) {
-            createCards(promptThis, fileLog);
+            createCards(thisPrompt, fileLog);
         } else {
             writeInLog(fileLog, JSON.stringify(questionArray));
-            flashcards();
+            start();
         }
 
     });
 };
 
+/* here we are asking the questions from the falshcards and capturing and comparing answers*/
 var quiz = function(fileLog, x) {
 
     fs.readFile(fileLog, "utf8", function(error, data) {
@@ -90,36 +83,38 @@ var quiz = function(fileLog, x) {
 
         if (x < jsonData.length) {
 
+            /* if the data has front as the question*/
             if (jsonData[x].hasOwnProperty("front")) {
-
+                /*then reference the BasicCard functions*/
                 var gameCard = new BasicCard(jsonData[x].front, jsonData[x].back);
                 var gameQuestion = gameCard.front;
                 var gameAnswer = gameCard.back.toLowerCase();
-            } else {
+            } else { /*if not, then we are going with the ClozeCard features*/
                 var gameCard = new ClozeCard(jsonData[x].text, jsonData[x].cloze);
                 var gameQuestion = gameCard.message;
                 var gameAnswer = gameCard.cloze.toLowerCase();
             }
 
+            /*asking the real questions here*/
             inquirer.prompt([{
                 name: "question",
                 message: gameQuestion,
                 validate: function(value) {
-
+                   /*making sure the user has entered something*/
                     if (value.length > 0) {
                         return true;
-                    }
+                    } /*else we insist the user participates*/
                     return "Come on, at least take a guess!";
                 }
 
             }]).then(function(answers) {
-
+                /*if the user gets the answer correct*/
                 if (answers.question.toLowerCase().indexOf(gameAnswer) > -1) {
                     console.log("Correct!");
                     correct++;
                     x++;
                     quiz(fileLog, x);
-                } else {
+                } else { /*if not, we tell them the correct answer in the selected format*/
                     gameCard.printAnswer();
                     wrong++;
                     x++;
@@ -128,17 +123,17 @@ var quiz = function(fileLog, x) {
 
             })
 
-        } else {
+        } else {/*when they are done with the quiz, we give them their total score*/
             console.log("Here's how you did: ");
             console.log("correct: " + correct);
             console.log("wrong: " + wrong);
             correct = 0;
             wrong = 0;
-            flashcards();
+            start();
         }
     });
 };
-
+/*writes the information from createCards to the file with the info being the json string*/
 var writeInLog = function(fileLog, info) {
 
     fs.writeFile(fileLog, info, function(err) {
@@ -147,6 +142,7 @@ var writeInLog = function(fileLog, info) {
     });
 }
 
+/*prompts to fill in the BasicCard question and answers*/ 
 var basicPrompt = [{
     name: "front",
     message: "Enter your question. "
@@ -160,12 +156,13 @@ var basicPrompt = [{
     default: true
 }]
 
+/*promts for the ClozeCard statements*/
 var clozePrompt = [{
     name: "text",
-    message: "Enter a sentence with the word you want as the answer in parenthesis, like... "The (apple) never falls far from the tree."",
+    message: "Enter a sentence with the word you want as the answer in parenthesis, like... ' The (apple) never falls far from the tree. '",
     validate: function(value) {
-        // Been reading up on Regular expressions and fond them quite (perplexing) useful with this exercise
-        //this is to verify the user is actualy using parentheses 
+        /* Been reading up on Regular expressions and found them quite (perplexing) useful with this exercise
+        this is to verify the user is actualy using parentheses and has alphanumeric within it*/
         var parentheses = /\(\w.+\)/;
         if (value.search(parentheses) > -1) {
             return true;
@@ -186,4 +183,4 @@ var makeMore = {
     default: true
 }
 
-flashcards();
+start();

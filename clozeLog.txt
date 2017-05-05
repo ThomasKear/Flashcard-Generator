@@ -1,1 +1,1 @@
-[{"text":"(Taylor Swift) won the Grammy for the Album of the Year with her album '1989' at the 2017 Grammy Awards.","cloze":"Taylor Swift"}]
+[{"text":"On September 19, 1893, (New Zealand) became the first nation to give its women citizens the right to vote, and the womenfolk of the island nation voted for the first time on November 28, 1893."},{"text":"The largest country in Central America is (Nicragua) with a total of 50,193 sq mi."},{"text":"The (Dominican Republic) is the only country which has a Bible on its national flag."}]
