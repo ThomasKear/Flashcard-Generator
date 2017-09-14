@@ -20,8 +20,8 @@ The (golden retriever) is the most popular breed in the United States.
 # Quiz
 Start by choosing one of the "Play ..." options.  The basic quiz, choosen by either "Play with the basic flashcards." or "Play with user created basic flashcards.", will display the front (question) of the card and allow you to type your answer.  The cloze quiz, accessed by "Play with cloze flashcards." or "Play with user created cloze cards.", will present your cloze card with an underline replacing the hidden word/s. With both games, the program will let you know the answer is and at the end give you a total score.
 
-#Dependencies
+# Dependencies
 This app was created using inquirer.js and node.js File System (fs).  Flashcards.js serves as the entry point for the app.  Constructors and methods for the two types of cards are exported from the files simple.js and cloze.js.  Each of the constructor modules provides methods not only for creating the cards, but also for displaying information during the quiz.
 
-#Next Steps
+# Next Steps
 I would like to add utility to this app by having a way to save and access seperate decks of cards, and an edit and delete existing card interface.  Also, incorporate a web based interface and a database.
